@@ -156,7 +156,7 @@ const Navbar: React.FC<NavbarProps> = ({
       boxShadow: scrolled ? '0 2px 10px rgba(0,0,0,0.05)' : 'none',
       transition: 'all 0.3s', zIndex: 1000
     }}>
-      <div className="container" style={{ maxWidth: '95%', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'nowrap' }}>
+      <div className="container" style={{ maxWidth: '96%', margin: '0 auto',paddingLeft: 400,paddingRight: 400, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'nowrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <Link to="/" style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary-pink)', textDecoration: 'none', whiteSpace: 'nowrap' }}>
             ATTENDANCE<span style={{ color: 'var(--deep-grey)' }}> :: K H O S</span>
@@ -321,6 +321,7 @@ const Navbar: React.FC<NavbarProps> = ({
           {user ? (
             <>
               <li><Link to="/dashboard" style={{ color: 'var(--deep-grey)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '14px' }}><User size={16} />Dashboard</Link></li>
+              <li><Link to="/shift-management" style={{ color: 'var(--deep-grey)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '14px' }}><User size={16} />ตั้งค่าเวร</Link></li>
               <li><button onClick={handleLogout} style={{ background: 'none', border: 'none', color: 'var(--deep-grey)', cursor: 'pointer', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '5px', fontSize: '14px' }}><LogOut size={16} />Logout</button></li>
             </>
           ) : (

@@ -121,24 +121,41 @@ app.get('/api/time-templates', auth, async (req, res) => {
     }
 });
 
-app.get('/api/persons', auth, async (req, res) => {
-  try {
-    const { departmentId } = req.query;
-    let query = "SELECT ID, HR_FNAME, HR_LNAME FROM hr_person WHERE HR_STATUS_ID = '01'";
-    const params = [];
-    
-    if (departmentId && departmentId !== 'all') {
-      query += " AND HR_DEPARTMENT_ID = ?";
-      params.push(departmentId);
+app.get('/api/shifts', auth, async (req, res) => {
+    try {
+        const [rows] = await db.execute(`
+            SELECT p.ID, p.HR_FNAME, p.HR_LNAME, d.HR_DEPARTMENT_NAME, hpht.TEMPLATE_ID
+            FROM hr_person p
+            LEFT JOIN hr_person_hiling_time hpht ON p.ID = hpht.HR_PERSON_ID
+            LEFT JOIN hr_department d ON p.HR_DEPARTMENT_ID = d.HR_DEPARTMENT_ID
+            WHERE p.HR_STATUS_ID = '01'
+            ORDER BY p.HR_FNAME
+        `);
+        res.json(rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
     }
-    
-    query += " ORDER BY HR_FNAME";
-    const [rows] = await db.execute(query, params);
-    res.json(rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
-  }
+});
+
+app.post('/api/shifts', auth, async (req, res) => {
+    try {
+        const { personId, templateId } = req.body;
+        
+        // Check if assignment exists
+        const [existing] = await db.execute('SELECT ID FROM hr_person_hiling_time WHERE HR_PERSON_ID = ?', [personId]);
+        
+        if (existing.length > 0) {
+            await db.execute('UPDATE hr_person_hiling_time SET TEMPLATE_ID = ? WHERE HR_PERSON_ID = ?', [templateId, personId]);
+        } else {
+            await db.execute('INSERT INTO hr_person_hiling_time (HR_PERSON_ID, TEMPLATE_ID) VALUES (?, ?)', [personId, templateId]);
+        }
+        
+        res.json({ message: 'Shift updated successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
 });
 
 app.get('/api/attendance/history', auth, async (req, res) => {
@@ -158,7 +175,7 @@ app.get('/api/attendance/history', auth, async (req, res) => {
         LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '15:30:00' AND '22:00:00' AND h.AttendanceStatus = 'o' THEN h.AccessTime END), 5) as check_out,
         LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '05:00:00' AND '10:00:00' AND h.AttendanceStatus = 'i' THEN h.AccessTime END), 5) as shift_m_in,
         LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '14:00:00' AND '17:00:00' AND h.AttendanceStatus = 'o' THEN h.AccessTime END), 5) as shift_m_out,
-        LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '13:00:00' AND '17:00:00' AND h.AttendanceStatus = 'i' THEN h.AccessTime END), 5) as shift_a_in,
+        LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '15:00:00' AND '17:00:00' AND h.AttendanceStatus = 'i' THEN h.AccessTime END), 5) as shift_a_in,
         LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '21:00:00' AND '23:59:59' AND h.AttendanceStatus = 'o' THEN h.AccessTime END), 5) as shift_a_out,
         LEFT(MAX(CASE WHEN (h.AccessTime BETWEEN '21:00:00' AND '23:59:59' OR h.AccessTime BETWEEN '00:00:00' AND '01:30:00') AND h.AttendanceStatus = 'i' THEN h.AccessTime END), 5) as shift_n_in,
         LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '06:00:00' AND '09:30:00' AND h.AttendanceStatus = 'o' THEN h.AccessTime END), 5) as shift_n_out

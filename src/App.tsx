@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
+import ShiftManagement from './pages/ShiftManagement';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 
@@ -57,6 +58,13 @@ function App() {
                         selectedTemplate={selectedTemplate}
                         selectedPerson={selectedPerson}
                     />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/shift-management"
+                element={
+                  <ProtectedRoute>
+                    <ShiftManagement />
                   </ProtectedRoute>
                 }
               />
