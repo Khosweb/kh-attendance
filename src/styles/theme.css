@@ -5,6 +5,14 @@
   --deep-grey: #4A4A4A;
   --light-grey: #F5F5F5;
   --transition: all 0.3s ease;
+  
+  --bg-gradient: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
+  --card-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --accent-color: #6366f1;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
 }
 
 * {
@@ -15,9 +23,58 @@
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: var(--white);
+  background-color: #f8fafc;
   color: var(--deep-grey);
   line-height: 1.6;
+}
+
+/* Dashboard Specific Styles */
+.dashboard-container {
+  padding: 40px 20px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.report-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.table-modern {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table-modern th {
+  background: #f1f5f9;
+  padding: 16px;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.table-modern td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+}
+
+.table-modern tr:hover td {
+  background-color: #f8fafc;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 a {

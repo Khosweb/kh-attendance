@@ -118,14 +118,41 @@ const Navbar: React.FC<NavbarProps> = ({
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingLeft: '20px', borderLeft: '1px solid #e5e7eb', color: '#374151', fontWeight: 600 }}>
               <BarChart3 size={20} />
               
-              {/* Template Dropdown */}
-              <select value={selectedTemplate} onChange={(e) => setSelectedTemplate && setSelectedTemplate(e.target.value)}
-                style={{ padding: '8px', borderRadius: '8px', border: '1px solid #e5e7eb', background: '#fef9c3', fontSize: '14px', fontWeight: 700 }}>
-                <option value="all">ทุกรูปแบบเวลา</option>
-                {templates.map(t => (
-                    <option key={t.ID} value={t.ID}>{t.HILING_TIME_NAME}</option>
-                ))}
-              </select>
+              {/* Template Buttons */}
+              <div style={{ display: 'flex', gap: '5px', background: '#f3f4f6', padding: '4px', borderRadius: '10px' }}>
+                <button 
+                  onClick={() => setSelectedTemplate && setSelectedTemplate('1')}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    transition: 'all 0.2s',
+                    backgroundColor: selectedTemplate === '1' ? 'var(--primary-pink)' : 'transparent',
+                    color: selectedTemplate === '1' ? 'white' : '#6b7280'
+                  }}
+                >
+                  เวรปกติ
+                </button>
+                <button 
+                  onClick={() => setSelectedTemplate && setSelectedTemplate('2')}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    transition: 'all 0.2s',
+                    backgroundColor: selectedTemplate === '2' ? 'var(--primary-pink)' : 'transparent',
+                    color: selectedTemplate === '2' ? 'white' : '#6b7280'
+                  }}
+                >
+                  เวร 8 ชม.
+                </button>
+              </div>
 
               {/* Staff Type Dropdown */}
               <select value={selectedStaffType} onChange={(e) => setSelectedStaffType && setSelectedStaffType(e.target.value)}

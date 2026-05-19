@@ -16,7 +16,7 @@ function App() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedDepartment, setSelectedDepartment] = useState('all');
   const [selectedStaffType, setSelectedStaffType] = useState('all');
-  const [selectedTemplate, setSelectedTemplate] = useState('all');
+  const [selectedTemplate, setSelectedTemplate] = useState('1');
 
   return (
     <AuthProvider>

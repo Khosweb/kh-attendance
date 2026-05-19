@@ -135,7 +135,13 @@ app.get('/api/attendance/history', auth, async (req, res) => {
         p.ID, p.HR_FNAME, p.HR_LNAME, d.HR_DEPARTMENT_NAME, pt.HR_PERSON_TYPE_NAME,
         CAST(h.AccessDate AS CHAR) as date,
         LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '05:00:00' AND '10:00:00' AND h.AttendanceStatus = 'i' THEN h.AccessTime END), 5) as check_in,
-        LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '15:30:00' AND '22:00:00' AND h.AttendanceStatus = 'o' THEN h.AccessTime END), 5) as check_out
+        LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '15:30:00' AND '22:00:00' AND h.AttendanceStatus = 'o' THEN h.AccessTime END), 5) as check_out,
+        LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '05:00:00' AND '10:00:00' AND h.AttendanceStatus = 'i' THEN h.AccessTime END), 5) as shift_m_in,
+        LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '14:00:00' AND '17:00:00' AND h.AttendanceStatus = 'o' THEN h.AccessTime END), 5) as shift_m_out,
+        LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '13:00:00' AND '17:00:00' AND h.AttendanceStatus = 'i' THEN h.AccessTime END), 5) as shift_a_in,
+        LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '21:00:00' AND '23:59:59' AND h.AttendanceStatus = 'o' THEN h.AccessTime END), 5) as shift_a_out,
+        LEFT(MAX(CASE WHEN (h.AccessTime BETWEEN '21:00:00' AND '23:59:59' OR h.AccessTime BETWEEN '00:00:00' AND '01:30:00') AND h.AttendanceStatus = 'i' THEN h.AccessTime END), 5) as shift_n_in,
+        LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '06:00:00' AND '09:30:00' AND h.AttendanceStatus = 'o' THEN h.AccessTime END), 5) as shift_n_out
       FROM hr_person p
       JOIN hikvision h ON p.FINGLE_ID = h.EmployeeID
       LEFT JOIN hr_department d ON p.HR_DEPARTMENT_ID = d.HR_DEPARTMENT_ID
@@ -264,4 +270,12 @@ app.get('/api/attendance/history', auth, async (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use. Please kill the process using it and try again.`);
+  } else {
+    console.error('Server error:', err);
+  }
+});
