@@ -121,9 +121,19 @@ app.get('/api/time-templates', auth, async (req, res) => {
     }
 });
 
+app.get('/api/persons', auth, async (req, res) => {
+  try {
+    const [rows] = await db.execute('SELECT ID, HR_FNAME, HR_LNAME FROM hr_person ORDER BY HR_FNAME');
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 app.get('/api/attendance/history', auth, async (req, res) => {
   try {
-    const { month, year, departmentId, staffTypeId, templateId } = req.query;
+    const { month, year, departmentId, staffTypeId, templateId, personId } = req.query;
     if (!month || !year) return res.status(400).json({ message: 'Month and year required' });
     
     const formattedMonth = month.toString().padStart(2, '0');
@@ -162,6 +172,10 @@ app.get('/api/attendance/history', auth, async (req, res) => {
         attendanceQuery += ` AND hpht.TEMPLATE_ID = ?`;
         params.push(templateId);
     }
+    if (personId && personId !== 'all') {
+        attendanceQuery += ` AND p.ID = ?`;
+        params.push(personId);
+    }
     attendanceQuery += ` GROUP BY p.ID, h.AccessDate`;
 
     const [attendanceRows] = await db.execute(attendanceQuery, params);
@@ -175,7 +189,12 @@ app.get('/api/attendance/history', auth, async (req, res) => {
       WHERE (lr.LEAVE_DATE_BEGIN LIKE ? OR lr.LEAVE_DATE_END LIKE ?)
       AND lr.LEAVE_CANCEL_STATUS = 'False'
     `;
-    const [leaveRows] = await db.execute(leaveQuery, [datePattern, datePattern]);
+    const leaveParams = [datePattern, datePattern];
+    if (personId && personId !== 'all') {
+        leaveQuery += ` AND lr.LEAVE_PERSON_ID = ?`;
+        leaveParams.push(personId);
+    }
+    const [leaveRows] = await db.execute(leaveQuery, leaveParams);
 
     // 3. Get Official Business Data (Going Out)
     let officialQuery = `
@@ -186,7 +205,12 @@ app.get('/api/attendance/history', auth, async (req, res) => {
       WHERE (ri.DATE_GO LIKE ? OR ri.DATE_BACK LIKE ?)
       AND (ri.CANCEL_STATUS IS NULL OR ri.CANCEL_STATUS = '')
     `;
-    const [officialRows] = await db.execute(officialQuery, [datePattern, datePattern]);
+    const officialParams = [datePattern, datePattern];
+    if (personId && personId !== 'all') {
+        officialQuery += ` AND rip.HR_PERSON_ID = ?`;
+        officialParams.push(personId);
+    }
+    const [officialRows] = await db.execute(officialQuery, officialParams);
 
     // 4. Get Holidays
     const [holidayRows] = await db.execute(

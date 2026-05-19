@@ -17,6 +17,7 @@ function App() {
   const [selectedDepartment, setSelectedDepartment] = useState('all');
   const [selectedStaffType, setSelectedStaffType] = useState('all');
   const [selectedTemplate, setSelectedTemplate] = useState('1');
+  const [selectedPerson, setSelectedPerson] = useState('all');
 
   return (
     <AuthProvider>
@@ -33,6 +34,8 @@ function App() {
             setSelectedStaffType={setSelectedStaffType}
             selectedTemplate={selectedTemplate}
             setSelectedTemplate={setSelectedTemplate}
+            selectedPerson={selectedPerson}
+            setSelectedPerson={setSelectedPerson}
           />
           <main style={{ marginTop: '80px' }}>
             <Routes>
@@ -52,6 +55,7 @@ function App() {
                         selectedDepartment={selectedDepartment}
                         selectedStaffType={selectedStaffType}
                         selectedTemplate={selectedTemplate}
+                        selectedPerson={selectedPerson}
                     />
                   </ProtectedRoute>
                 }

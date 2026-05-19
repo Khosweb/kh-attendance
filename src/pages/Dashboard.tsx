@@ -33,9 +33,10 @@ interface DashboardProps {
   selectedDepartment: string;
   selectedStaffType: string;
   selectedTemplate: string;
+  selectedPerson: string;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, selectedDepartment, selectedStaffType, selectedTemplate }) => {
+const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, selectedDepartment, selectedStaffType, selectedTemplate, selectedPerson }) => {
   const { user } = useAuth();
   const [history, setHistory] = useState<RawRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,7 +44,7 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
   const fetchHistory = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:5001/api/attendance/history?month=${selectedMonth}&year=${selectedYear}&departmentId=${selectedDepartment}&staffTypeId=${selectedStaffType}&templateId=${selectedTemplate}`, {
+      const response = await fetch(`http://localhost:5001/api/attendance/history?month=${selectedMonth}&year=${selectedYear}&departmentId=${selectedDepartment}&staffTypeId=${selectedStaffType}&templateId=${selectedTemplate}&personId=${selectedPerson}`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
       });
       const data = await response.json();
@@ -53,7 +54,7 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
     } finally {
       setLoading(false);
     }
-  }, [selectedMonth, selectedYear, selectedDepartment, selectedStaffType, selectedTemplate]);
+  }, [selectedMonth, selectedYear, selectedDepartment, selectedStaffType, selectedTemplate, selectedPerson]);
 
   useEffect(() => {
     fetchHistory();

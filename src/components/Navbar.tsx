@@ -18,6 +18,12 @@ interface TimeTemplate {
     HILING_TIME_NAME: string;
 }
 
+interface Person {
+    ID: string;
+    HR_FNAME: string;
+    HR_LNAME: string;
+}
+
 interface NavbarProps {
   selectedMonth?: number;
   setSelectedMonth?: React.Dispatch<React.SetStateAction<number>>;
@@ -29,18 +35,22 @@ interface NavbarProps {
   setSelectedStaffType?: React.Dispatch<React.SetStateAction<string>>;
   selectedTemplate?: string;
   setSelectedTemplate?: React.Dispatch<React.SetStateAction<string>>;
+  selectedPerson?: string;
+  setSelectedPerson?: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ 
     selectedMonth, setSelectedMonth, selectedYear, setSelectedYear,
     selectedDepartment, setSelectedDepartment,
     selectedStaffType, setSelectedStaffType,
-    selectedTemplate, setSelectedTemplate
+    selectedTemplate, setSelectedTemplate,
+    selectedPerson, setSelectedPerson
 }) => {
   const [scrolled, setScrolled] = useState(false);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [staffTypes, setStaffTypes] = useState<StaffType[]>([]);
   const [templates, setTemplates] = useState<TimeTemplate[]>([]);
+  const [persons, setPersons] = useState<Person[]>([]);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -56,21 +66,24 @@ const Navbar: React.FC<NavbarProps> = ({
         try {
             const headers = { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` };
             
-            const [depRes, typeRes, tempRes] = await Promise.all([
+            const [depRes, typeRes, tempRes, personRes] = await Promise.all([
                 fetch('http://localhost:5001/api/departments', { headers }),
                 fetch('http://localhost:5001/api/staff-types', { headers }),
-                fetch('http://localhost:5001/api/time-templates', { headers })
+                fetch('http://localhost:5001/api/time-templates', { headers }),
+                fetch('http://localhost:5001/api/persons', { headers })
             ]);
 
-            const [depData, typeData, tempData] = await Promise.all([
+            const [depData, typeData, tempData, personData] = await Promise.all([
                 depRes.json(),
                 typeRes.json(),
-                tempRes.json()
+                tempRes.json(),
+                personRes.json()
             ]);
 
             if (Array.isArray(depData)) setDepartments(depData);
             if (Array.isArray(typeData)) setStaffTypes(typeData);
             if (Array.isArray(tempData)) setTemplates(tempData);
+            if (Array.isArray(personData)) setPersons(personData);
         } catch (err) {
             console.error('Navbar: Failed to fetch filter data', err);
         }
@@ -108,15 +121,15 @@ const Navbar: React.FC<NavbarProps> = ({
       boxShadow: scrolled ? '0 2px 10px rgba(0,0,0,0.05)' : 'none',
       transition: 'all 0.3s', zIndex: 1000
     }}>
-      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="container" style={{ maxWidth: '60%',margin: 0,paddingLeft: 400,paddingRight: 0,display: 'flex', justifyContent: 'space-between', alignItems: 'center',flexWrap: 'nowrap',whiteSpace: 'nowrap'  }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <Link to="/" style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--primary-pink)', textDecoration: 'none' }}>
-            ATTENDANCE<span style={{ color: 'var(--deep-grey)' }}>  K : H : O : S</span>
+          <Link to="/" style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary-pink)', textDecoration: 'none',flexWrap: 'nowrap' }}>
+            ATTENDANCE<span style={{ color: 'var(--deep-grey)' }}> :: K  H  O  S</span>
           </Link>
           
           {isDashboard && user && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingLeft: '20px', borderLeft: '1px solid #e5e7eb', color: '#374151', fontWeight: 600 }}>
-              <BarChart3 size={20} />
+              {/* <BarChart3 size={20} /> */}
               
               {/* Template Buttons */}
               <div style={{ display: 'flex', gap: '5px', background: '#f3f4f6', padding: '4px', borderRadius: '10px' }}>
@@ -127,7 +140,7 @@ const Navbar: React.FC<NavbarProps> = ({
                     borderRadius: '8px',
                     border: 'none',
                     cursor: 'pointer',
-                    fontSize: '13px',
+                    fontSize: '15px',
                     fontWeight: 700,
                     transition: 'all 0.2s',
                     backgroundColor: selectedTemplate === '1' ? 'var(--primary-pink)' : 'transparent',
@@ -143,7 +156,7 @@ const Navbar: React.FC<NavbarProps> = ({
                     borderRadius: '8px',
                     border: 'none',
                     cursor: 'pointer',
-                    fontSize: '13px',
+                    fontSize: '15px',
                     fontWeight: 700,
                     transition: 'all 0.2s',
                     backgroundColor: selectedTemplate === '2' ? 'var(--primary-pink)' : 'transparent',
@@ -156,7 +169,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
               {/* Staff Type Dropdown */}
               <select value={selectedStaffType} onChange={(e) => setSelectedStaffType && setSelectedStaffType(e.target.value)}
-                style={{ padding: '8px', borderRadius: '8px', border: '1px solid #e5e7eb', background: '#f3f4f6', fontSize: '14px' }}>
+                style={{ padding: '8px', borderRadius: '8px', border: '1px solid #e5e7eb', background: '#f3f4f6', fontSize: '15px' }}>
                 <option value="all">ทุกประเภท</option>
                 {staffTypes.map(t => (
                     <option key={t.HR_PERSON_TYPE_ID} value={t.HR_PERSON_TYPE_ID}>{t.HR_PERSON_TYPE_NAME}</option>
@@ -165,10 +178,19 @@ const Navbar: React.FC<NavbarProps> = ({
 
               {/* Department Dropdown */}
               <select value={selectedDepartment} onChange={(e) => setSelectedDepartment && setSelectedDepartment(e.target.value)}
-                style={{ padding: '8px', borderRadius: '8px', border: '1px solid #e5e7eb', background: '#f3f4f6', fontSize: '14px' }}>
+                style={{ padding: '8px', borderRadius: '8px', border: '1px solid #e5e7eb', background: '#f3f4f6', fontSize: '15px' }}>
                 <option value="all">ทุกแผนก</option>
                 {departments.map(d => (
                     <option key={d.HR_DEPARTMENT_ID} value={d.HR_DEPARTMENT_ID}>{d.HR_DEPARTMENT_NAME}</option>
+                ))}
+              </select>
+
+              {/* Person Dropdown */}
+              <select value={selectedPerson} onChange={(e) => setSelectedPerson && setSelectedPerson(e.target.value)}
+                style={{ padding: '8px', borderRadius: '8px', border: '1px solid #e5e7eb', background: '#f3f4f6', fontSize: '15px', maxWidth: '150px' }}>
+                <option value="all">รายบุคคล (ทุกคน)</option>
+                {persons.map(p => (
+                    <option key={p.ID} value={p.ID}>{p.HR_FNAME} {p.HR_LNAME}</option>
                 ))}
               </select>
 
