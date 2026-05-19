@@ -66,30 +66,44 @@ const Navbar: React.FC<NavbarProps> = ({
         try {
             const headers = { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` };
             
-            const [depRes, typeRes, tempRes, personRes] = await Promise.all([
+            const [depRes, typeRes, tempRes] = await Promise.all([
                 fetch('http://localhost:5001/api/departments', { headers }),
                 fetch('http://localhost:5001/api/staff-types', { headers }),
-                fetch('http://localhost:5001/api/time-templates', { headers }),
-                fetch('http://localhost:5001/api/persons', { headers })
+                fetch('http://localhost:5001/api/time-templates', { headers })
             ]);
 
-            const [depData, typeData, tempData, personData] = await Promise.all([
+            const [depData, typeData, tempData] = await Promise.all([
                 depRes.json(),
                 typeRes.json(),
-                tempRes.json(),
-                personRes.json()
+                tempRes.json()
             ]);
 
             if (Array.isArray(depData)) setDepartments(depData);
             if (Array.isArray(typeData)) setStaffTypes(typeData);
             if (Array.isArray(tempData)) setTemplates(tempData);
-            if (Array.isArray(personData)) setPersons(personData);
         } catch (err) {
             console.error('Navbar: Failed to fetch filter data', err);
         }
     };
     if (user) fetchData();
   }, [user]);
+
+  useEffect(() => {
+    const fetchPersons = async () => {
+        try {
+            const headers = { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` };
+            const res = await fetch(`http://localhost:5001/api/persons?departmentId=${selectedDepartment}`, { headers });
+            const data = await res.json();
+            if (Array.isArray(data)) setPersons(data);
+        } catch (err) {
+            console.error('Navbar: Failed to fetch persons', err);
+        }
+    };
+    if (user) {
+        fetchPersons();
+        if (setSelectedPerson) setSelectedPerson('all');
+    }
+  }, [user, selectedDepartment, setSelectedPerson]);
 
   const handleLogout = () => {
     logout();

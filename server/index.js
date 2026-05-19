@@ -123,7 +123,17 @@ app.get('/api/time-templates', auth, async (req, res) => {
 
 app.get('/api/persons', auth, async (req, res) => {
   try {
-    const [rows] = await db.execute('SELECT ID, HR_FNAME, HR_LNAME FROM hr_person ORDER BY HR_FNAME');
+    const { departmentId } = req.query;
+    let query = "SELECT ID, HR_FNAME, HR_LNAME FROM hr_person WHERE HR_STATUS_ID = '01'";
+    const params = [];
+    
+    if (departmentId && departmentId !== 'all') {
+      query += " AND HR_DEPARTMENT_ID = ?";
+      params.push(departmentId);
+    }
+    
+    query += " ORDER BY HR_FNAME";
+    const [rows] = await db.execute(query, params);
     res.json(rows);
   } catch (err) {
     console.error(err);
