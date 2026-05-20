@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, User, BarChart3, ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
+import { LogOut, User, ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
 
 interface Department {
   HR_DEPARTMENT_ID: string;
@@ -11,11 +11,6 @@ interface Department {
 interface StaffType {
     HR_PERSON_TYPE_ID: string;
     HR_PERSON_TYPE_NAME: string;
-}
-
-interface TimeTemplate {
-    ID: string;
-    HILING_TIME_NAME: string;
 }
 
 interface Person {
@@ -49,12 +44,11 @@ const Navbar: React.FC<NavbarProps> = ({
   const [scrolled, setScrolled] = useState(false);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [staffTypes, setStaffTypes] = useState<StaffType[]>([]);
-  const [templates, setTemplates] = useState<TimeTemplate[]>([]);
   const [persons, setPersons] = useState<Person[]>([]);
   const [personSearch, setPersonSearch] = useState('');
   const [showPersonDropdown, setShowPersonList] = useState(false);
   const personDropdownRef = useRef<HTMLDivElement>(null);
-  
+
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -79,29 +73,25 @@ const Navbar: React.FC<NavbarProps> = ({
     const fetchData = async () => {
         try {
             const headers = { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` };
-            
-            const [depRes, typeRes, tempRes] = await Promise.all([
+
+            const [depRes, typeRes] = await Promise.all([
                 fetch('http://localhost:5001/api/departments', { headers }),
-                fetch('http://localhost:5001/api/staff-types', { headers }),
-                fetch('http://localhost:5001/api/time-templates', { headers })
+                fetch('http://localhost:5001/api/staff-types', { headers })
             ]);
 
-            const [depData, typeData, tempData] = await Promise.all([
+            const [depData, typeData] = await Promise.all([
                 depRes.json(),
-                typeRes.json(),
-                tempRes.json()
+                typeRes.json()
             ]);
 
             if (Array.isArray(depData)) setDepartments(depData);
             if (Array.isArray(typeData)) setStaffTypes(typeData);
-            if (Array.isArray(tempData)) setTemplates(tempData);
         } catch (err) {
             console.error('Navbar: Failed to fetch filter data', err);
         }
     };
     if (user) fetchData();
   }, [user]);
-
   useEffect(() => {
     const fetchPersons = async () => {
         try {

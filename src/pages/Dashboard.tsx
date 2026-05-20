@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useAuth } from '../context/AuthContext';
 import { BarChart3, Printer, FileDown } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
@@ -37,12 +36,9 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, selectedDepartment, selectedStaffType, selectedTemplate, selectedPerson }) => {
-  const { user } = useAuth();
   const [history, setHistory] = useState<RawRecord[]>([]);
-  const [loading, setLoading] = useState(true);
 
   const fetchHistory = useCallback(async () => {
-    setLoading(true);
     try {
       const response = await fetch(`http://localhost:5001/api/attendance/history?month=${selectedMonth}&year=${selectedYear}&departmentId=${selectedDepartment}&staffTypeId=${selectedStaffType}&templateId=${selectedTemplate}&personId=${selectedPerson}`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
@@ -51,8 +47,6 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
       setHistory(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Failed to fetch history', err);
-    } finally {
-      setLoading(false);
     }
   }, [selectedMonth, selectedYear, selectedDepartment, selectedStaffType, selectedTemplate, selectedPerson]);
 
@@ -234,7 +228,7 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
                 <th 
                   rowSpan={selectedTemplate === '2' ? 3 : 2} 
                   style={{ 
-                    fontSize: '16px', color: '#090000', fontWeight: 600, padding: '8px 4px', borderRight: '1px solid #e2e8f0',
+                    fontSize: '16px', color: '#090000', fontWeight: 600, padding: '8px 4px',
                     position: 'sticky', left: 0, top: 0, zIndex: 30, 
                     background: '#f8fafc', minWidth: '200px', borderRight: '1px solid #e2e8f0',
                     boxShadow: '2px 0 5px rgba(0,0,0,0.05)'
@@ -245,7 +239,7 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
                 <th 
                   rowSpan={selectedTemplate === '2' ? 3 : 2} 
                   style={{ 
-                    fontSize: '16px', color: '#090000', fontWeight: 600, padding: '8px 4px', borderRight: '1px solid #e2e8f0',
+                    fontSize: '16px', color: '#090000', fontWeight: 600, padding: '8px 4px',
                     position: 'sticky', left: '200px', top: 0, zIndex: 30, 
                     background: '#f8fafc', minWidth: '150px', borderRight: '1px solid #e2e8f0',
                     boxShadow: '2px 0 5px rgba(0,0,0,0.05)'
