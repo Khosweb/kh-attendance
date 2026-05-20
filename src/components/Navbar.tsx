@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { LogOut, User, ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
+import { API_URL } from '../utils/constant';
 
 interface Department {
   HR_DEPARTMENT_ID: string;
@@ -75,8 +76,8 @@ const Navbar: React.FC<NavbarProps> = ({
             const headers = { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` };
 
             const [depRes, typeRes] = await Promise.all([
-                fetch('http://localhost:5001/api/departments', { headers }),
-                fetch('http://localhost:5001/api/staff-types', { headers })
+                fetch('${API_URL}/departments', { headers }),
+                fetch('${API_URL}/staff-types', { headers })
             ]);
 
             const [depData, typeData] = await Promise.all([
@@ -96,7 +97,7 @@ const Navbar: React.FC<NavbarProps> = ({
     const fetchPersons = async () => {
         try {
             const headers = { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` };
-            const res = await fetch(`http://localhost:5001/api/persons?departmentId=${selectedDepartment}`, { headers });
+            const res = await fetch(`${API_URL}/persons?departmentId=${selectedDepartment}`, { headers });
             const data = await res.json();
             if (Array.isArray(data)) setPersons(data);
         } catch (err) {

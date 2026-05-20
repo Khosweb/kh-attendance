@@ -26,8 +26,8 @@ const ShiftManagement: React.FC = () => {
         const fetchData = async () => {
             const headers = { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` };
             const [shiftRes, tempRes] = await Promise.all([
-                fetch('http://localhost:5001/api/shifts', { headers }),
-                fetch('http://localhost:5001/api/time-templates', { headers })
+                fetch('${API_URL}/shifts', { headers }),
+                fetch('${API_URL}/time-templates', { headers })
             ]);
             setAssignments(await shiftRes.json());
             setTemplates(await tempRes.json());
@@ -41,7 +41,7 @@ const ShiftManagement: React.FC = () => {
             'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
             'Content-Type': 'application/json'
         };
-        await fetch('http://localhost:5001/api/shifts', {
+        await fetch('${API_URL}/shifts', {
             method: 'POST',
             headers,
             body: JSON.stringify({ personId, templateId })

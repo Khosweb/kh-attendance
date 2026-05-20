@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { BarChart3, Printer, FileDown } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { API_URL } from '../utils/constant';
 
 interface RawRecord {
   ID: string;
@@ -40,7 +41,7 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
 
   const fetchHistory = useCallback(async () => {
     try {
-      const response = await fetch(`http://localhost:5001/api/attendance/history?month=${selectedMonth}&year=${selectedYear}&departmentId=${selectedDepartment}&staffTypeId=${selectedStaffType}&templateId=${selectedTemplate}&personId=${selectedPerson}`, {
+      const response = await fetch(`${API_URL}/attendance/history?month=${selectedMonth}&year=${selectedYear}&departmentId=${selectedDepartment}&staffTypeId=${selectedStaffType}&templateId=${selectedTemplate}&personId=${selectedPerson}`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
       });
       const data = await response.json();
