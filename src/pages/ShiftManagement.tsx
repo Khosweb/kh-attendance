@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Search, X } from 'lucide-react';
+import { API_URL } from '../utils/constant';
 
 interface ShiftAssignment {
     ID: string;
@@ -25,13 +26,20 @@ const ShiftManagement: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             const headers = { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` };
-            const [shiftRes, tempRes] = await Promise.all([
-                fetch('${API_URL}/shifts', { headers }),
-                fetch('${API_URL}/time-templates', { headers })
-            ]);
-            setAssignments(await shiftRes.json());
-            setTemplates(await tempRes.json());
-            setLoading(false);
+            try {
+                const [shiftRes, tempRes] = await Promise.all([
+                    fetch(`${API_URL}/shifts`, { headers }),
+                    fetch(`${API_URL}/time-templates`, { headers })
+                ]);
+                const shiftData = await shiftRes.json();
+                const tempData = await tempRes.json();
+                if (Array.isArray(shiftData)) setAssignments(shiftData);
+                if (Array.isArray(tempData)) setTemplates(tempData);
+            } catch (err) {
+                console.error('ShiftManagement: Failed to fetch data', err);
+            } finally {
+                setLoading(false);
+            }
         };
         if (user) fetchData();
     }, [user]);
@@ -41,12 +49,16 @@ const ShiftManagement: React.FC = () => {
             'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
             'Content-Type': 'application/json'
         };
-        await fetch('${API_URL}/shifts', {
-            method: 'POST',
-            headers,
-            body: JSON.stringify({ personId, templateId })
-        });
-        setAssignments(prev => prev.map(a => a.ID === personId ? {...a, TEMPLATE_ID: templateId} : a));
+        try {
+            await fetch(`${API_URL}/shifts`, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({ personId, templateId })
+            });
+            setAssignments(prev => prev.map(a => a.ID === personId ? {...a, TEMPLATE_ID: templateId} : a));
+        } catch (err) {
+            console.error('ShiftManagement: Failed to update shift', err);
+        }
     };
 
     const filteredAssignments = assignments.filter(a => {

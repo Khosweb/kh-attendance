@@ -76,8 +76,8 @@ const Navbar: React.FC<NavbarProps> = ({
             const headers = { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` };
 
             const [depRes, typeRes] = await Promise.all([
-                fetch('${API_URL}/departments', { headers }),
-                fetch('${API_URL}/staff-types', { headers })
+                fetch(`${API_URL}/departments`, { headers }),
+                fetch(`${API_URL}/staff-types`, { headers })
             ]);
 
             const [depData, typeData] = await Promise.all([
