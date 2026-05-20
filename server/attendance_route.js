@@ -14,8 +14,8 @@ app.get('/api/attendance/history', auth, async (req, res) => {
     const [rows] = await db.execute(
       `SELECT 
         AccessDate as date,
-        MAX(CASE WHEN AccessTime BETWEEN '05:00:00' AND '09:00:00' AND AttendanceStatus = 'i' THEN AccessTime END) as check_in,
-        MAX(CASE WHEN AccessTime BETWEEN '15:30:00' AND '20:00:00' AND AttendanceStatus = 'o' THEN AccessTime END) as check_out
+        MAX(CASE WHEN AccessTime BETWEEN '04:00:00' AND '09:00:00' AND AttendanceStatus = 'i' THEN AccessTime END) as check_in,
+        MAX(CASE WHEN AccessTime BETWEEN '14:00:00' AND '20:00:00' AND AttendanceStatus = 'o' THEN AccessTime END) as check_out
        FROM hikvision 
        WHERE EmployeeID = ? 
        AND AccessDate LIKE ?

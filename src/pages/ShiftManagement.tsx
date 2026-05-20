@@ -49,9 +49,11 @@ const ShiftManagement: React.FC = () => {
         setAssignments(prev => prev.map(a => a.ID === personId ? {...a, TEMPLATE_ID: templateId} : a));
     };
 
-    const filteredAssignments = assignments.filter(a => 
-        `${a.HR_FNAME} ${a.HR_LNAME}`.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredAssignments = assignments.filter(a => {
+        const fullName = `${a.HR_FNAME} ${a.HR_LNAME}`.toLowerCase();
+        const searchTerms = searchQuery.toLowerCase().split(/\s+/).filter(Boolean);
+        return searchTerms.every(term => fullName.includes(term));
+    });
 
     if (loading) return <div className="container" style={{ paddingTop: '100px' }}>Loading...</div>;
 

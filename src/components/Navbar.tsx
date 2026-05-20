@@ -141,9 +141,11 @@ const Navbar: React.FC<NavbarProps> = ({
     setSelectedYear(selectedYear + delta);
   };
 
-  const filteredPersons = persons.filter(p => 
-    `${p.HR_FNAME} ${p.HR_LNAME}`.toLowerCase().includes(personSearch.toLowerCase())
-  );
+  const filteredPersons = persons.filter(p => {
+    const fullName = `${p.HR_FNAME} ${p.HR_LNAME}`.toLowerCase();
+    const searchTerms = personSearch.toLowerCase().split(/\s+/).filter(Boolean);
+    return searchTerms.every(term => fullName.includes(term));
+  });
 
   const selectedPersonName = persons.find(p => p.ID === selectedPerson);
 
@@ -156,7 +158,7 @@ const Navbar: React.FC<NavbarProps> = ({
       boxShadow: scrolled ? '0 2px 10px rgba(0,0,0,0.05)' : 'none',
       transition: 'all 0.3s', zIndex: 1000
     }}>
-      <div className="container" style={{ maxWidth: '96%', margin: '0 auto',paddingLeft: 400,paddingRight: 400, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'nowrap' }}>
+      <div className="container" style={{ maxWidth: '98%', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'nowrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <Link to="/" style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary-pink)', textDecoration: 'none', whiteSpace: 'nowrap' }}>
             ATTENDANCE<span style={{ color: 'var(--deep-grey)' }}> :: K H O S</span>

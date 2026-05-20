@@ -178,62 +178,63 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
   };
 
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-container" style={{ padding: '20px', maxWidth: '100%', width: '100%' }}>
       {/* Stats Cards Section */}
-      <div className="no-print" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-        <div className="report-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <div style={{ background: '#ecfdf5', padding: '12px', borderRadius: '15px', color: '#10b981' }}><BarChart3 size={32} /></div>
+      <div className="no-print" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginBottom: '20px' }}>
+        <div className="report-card" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <div style={{ background: '#ecfdf5', padding: '10px', borderRadius: '12px', color: '#10b981' }}><BarChart3 size={24} /></div>
           <div>
-            <div style={{ color: '#64748b', fontSize: '14px', fontWeight: 500 }}>จำนวนบุคลากร</div>
-            <div style={{ fontSize: '24px', fontWeight: 700, color: '#1e293b' }}>{groupedData.length} คน</div>
+            <div style={{ color: '#64748b', fontSize: '12px', fontWeight: 500 }}>จำนวนบุคลากร</div>
+            <div style={{ fontSize: '20px', fontWeight: 700, color: '#1e293b' }}>{groupedData.length} คน</div>
           </div>
         </div>
-        <div className="report-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <div style={{ background: '#fff7ed', padding: '12px', borderRadius: '15px', color: '#f59e0b' }}><BarChart3 size={32} /></div>
+        <div className="report-card" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <div style={{ background: '#fff7ed', padding: '10px', borderRadius: '12px', color: '#f59e0b' }}><BarChart3 size={24} /></div>
           <div>
-            <div style={{ color: '#64748b', fontSize: '14px', fontWeight: 500 }}>มาปฏิบัติงานวันนี้</div>
-            <div style={{ fontSize: '24px', fontWeight: 700, color: '#1e293b' }}>{Math.floor(groupedData.length * 0.9)} คน</div>
+            <div style={{ color: '#64748b', fontSize: '12px', fontWeight: 500 }}>มาปฏิบัติงานวันนี้</div>
+            <div style={{ fontSize: '20px', fontWeight: 700, color: '#1e293b' }}>{Math.floor(groupedData.length * 0.9)} คน</div>
           </div>
         </div>
-        <div className="report-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <div style={{ background: '#fef2f2', padding: '12px', borderRadius: '15px', color: '#ef4444' }}><BarChart3 size={32} /></div>
+        <div className="report-card" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <div style={{ background: '#fef2f2', padding: '10px', borderRadius: '12px', color: '#ce0916' }}><BarChart3 size={24} /></div>
           <div>
-            <div style={{ color: '#64748b', fontSize: '14px', fontWeight: 500 }}>ลา/ไปราชการ</div>
-            <div style={{ fontSize: '24px', fontWeight: 700, color: '#1e293b' }}>{Math.floor(groupedData.length * 0.1)} คน</div>
+            <div style={{ color: '#64748b', fontSize: '12px', fontWeight: 500 }}>ลา/ไปราชการ</div>
+            <div style={{ fontSize: '20px', fontWeight: 700, color: '#1e293b' }}>{Math.floor(groupedData.length * 0.1)} คน</div>
           </div>
         </div>
-        <div className="report-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <div style={{ background: '#eef2ff', padding: '12px', borderRadius: '15px', color: '#6366f1' }}><BarChart3 size={32} /></div>
+        <div className="report-card" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <div style={{ background: '#eef2ff', padding: '10px', borderRadius: '12px', color: '#6366f1' }}><BarChart3 size={24} /></div>
           <div>
-            <div style={{ color: '#64748b', fontSize: '14px', fontWeight: 500 }}>แผนกทั้งหมด</div>
-            <div style={{ fontSize: '24px', fontWeight: 700, color: '#1e293b' }}>{new Set(groupedData.map(e => e.department)).size} แผนก</div>
+            <div style={{ color: '#64748b', fontSize: '12px', fontWeight: 500 }}>แผนกทั้งหมด</div>
+            <div style={{ fontSize: '20px', fontWeight: 700, color: '#1e293b' }}>{new Set(groupedData.map(e => e.department)).size} แผนก</div>
           </div>
         </div>
       </div>
 
       <div className="report-card">
-        <div className="no-print" style={{ padding: '24px', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white' }}>
+        <div className="no-print" style={{ padding: '15px 24px', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white' }}>
           <div>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#1e293b', margin: 0 }}>รายงานการลงเวลาปฏิบัติราชการ</h2>
-            <p style={{ color: '#64748b', fontSize: '14px', margin: '4px 0 0 0' }}>สรุปผลการสแกนใบหน้าประจำเดือน {selectedMonth}/{selectedYear + 543}</p>
+            <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1e293b', margin: 0 }}>รายงานการลงเวลาปฏิบัติราชการ</h2>
+            <p style={{ color: '#64748b', fontSize: '13px', margin: '2px 0 0 0' }}>สรุปผลการสแกนใบหน้าประจำเดือน {selectedMonth}/{selectedYear + 543}</p>
           </div>
           <div style={{ display: 'flex', gap: '10px' }}>
-            <button onClick={handleExportExcel} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', fontSize: '14px', background: '#10b981' }}>
-                <FileDown size={18} /> Export Excel
+            <button onClick={handleExportExcel} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', fontSize: '13px', background: '#10b981' }}>
+                <FileDown size={16} /> Export Excel
             </button>
-            <button onClick={handlePrint} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', fontSize: '14px' }}>
-                <Printer size={18} /> พิมพ์รายงาน
+            <button onClick={handlePrint} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', fontSize: '13px' }}>
+                <Printer size={16} /> พิมพ์รายงาน
             </button>
           </div>
         </div>
 
-        <div style={{ overflowX: 'auto', overflowY: 'auto', maxHeight: '80vh', position: 'relative' }}>
-          <table className="table-modern" style={{ minWidth: selectedTemplate === '2' ? '6500px' : '2200px', borderCollapse: 'separate' }}>
+        <div style={{ overflowX: 'auto', overflowY: 'auto', maxHeight: 'calc(100vh - 280px)', position: 'relative' }}>
+          <table className="table-modern" style={{ minWidth: selectedTemplate === '2' ? '100%' : undefined, tableLayout: 'auto',borderCollapse: 'separate' }}>
             <thead>
               <tr>
                 <th 
                   rowSpan={selectedTemplate === '2' ? 3 : 2} 
                   style={{ 
+                    fontSize: '16px', color: '#090000', fontWeight: 600, padding: '8px 4px', borderRight: '1px solid #e2e8f0',
                     position: 'sticky', left: 0, top: 0, zIndex: 30, 
                     background: '#f8fafc', minWidth: '200px', borderRight: '1px solid #e2e8f0',
                     boxShadow: '2px 0 5px rgba(0,0,0,0.05)'
@@ -244,6 +245,7 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
                 <th 
                   rowSpan={selectedTemplate === '2' ? 3 : 2} 
                   style={{ 
+                    fontSize: '16px', color: '#090000', fontWeight: 600, padding: '8px 4px', borderRight: '1px solid #e2e8f0',
                     position: 'sticky', left: '200px', top: 0, zIndex: 30, 
                     background: '#f8fafc', minWidth: '150px', borderRight: '1px solid #e2e8f0',
                     boxShadow: '2px 0 5px rgba(0,0,0,0.05)'
@@ -258,12 +260,12 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
                   return (
                     <th key={d} colSpan={selectedTemplate === '2' ? 6 : 2} style={{ 
                       textAlign: 'center', 
-                      backgroundColor: holidayName ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined,
-                      borderLeft: '1px solid #e2e8f0',
+                      backgroundColor: holidayName ? '#ce0916' : isWeekend ? '#f8fafc' : undefined,
+                      borderLeft: '1px solid #f0d6f0',
                       position: 'sticky', top: 0, zIndex: 10
                     }}>
-                        <div style={{ color: holidayName ? '#e11d48' : isWeekend ? '#64748b' : '#475569' }}>{d}</div>
-                        {holidayName && <div style={{ fontSize: '10px', fontWeight: 700, color: '#e11d48', marginTop: '2px' }}>{holidayName}</div>}
+                        <div style={{ color: holidayName ? '#f4eef0' : isWeekend ? '#64748b' : '#475569' ,fontSize: '14px'}}>{d}</div>
+                        {holidayName && <div style={{ fontSize: '15px', fontWeight: 700, color: '#f9f7f7', marginTop: '2px' }}>{holidayName}</div>}
                     </th>
                   );
                 })}
@@ -274,16 +276,16 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
                   if (!isShift8) {
                       return (
                         <React.Fragment key={d}>
-                            <th style={{ fontSize: '10px', padding: '8px 4px', borderLeft: '1px solid #e2e8f0', position: 'sticky', top: '45px', zIndex: 10, background: '#f1f5f9' }}>เข้า</th>
-                            <th style={{ fontSize: '10px', padding: '8px 4px', position: 'sticky', top: '45px', zIndex: 10, background: '#f1f5f9' }}>ออก</th>
+                            <th style={{ fontSize: '14px',color: '#090000',padding: '8px 4px', borderLeft: '1px solid #efb4e2', position: 'sticky', top: '45px', zIndex: 10, background: '#e5ecf7' }}>เข้า</th>
+                            <th style={{ fontSize: '14px',color: '#090000',padding: '8px 4px', position: 'sticky', top: '45px', zIndex: 10, background: '#e5ecf7' }}>ออก</th>
                         </React.Fragment>
                       );
                   }
                   return (
                     <React.Fragment key={d}>
-                      <th colSpan={2} style={{ fontSize: '10px', padding: '8px 4px', borderLeft: '1px solid #e2e8f0', backgroundColor: '#ef4444', color: 'white', position: 'sticky', top: '45px', zIndex: 10 }}>เช้า</th>
-                      <th colSpan={2} style={{ fontSize: '10px', padding: '8px 4px', borderLeft: '1px solid #e2e8f0', backgroundColor: '#ef4444', color: 'white', position: 'sticky', top: '45px', zIndex: 10 }}>บ่าย</th>
-                      <th colSpan={2} style={{ fontSize: '10px', padding: '8px 4px', borderLeft: '1px solid #e2e8f0', backgroundColor: '#ef4444', color: 'white', position: 'sticky', top: '45px', zIndex: 10 }}>ดึก</th>
+                      <th colSpan={2} style={{ fontSize: '14px', padding: '8px 4px', borderLeft: '1px solid #e2e8f0', backgroundColor: '#089c81', color: 'white', position: 'sticky', top: '45px', zIndex: 10 }}>เช้า</th>
+                      <th colSpan={2} style={{ fontSize: '14px', padding: '8px 4px', borderLeft: '1px solid #e2e8f0', backgroundColor: '#ec860a', color: 'white', position: 'sticky', top: '45px', zIndex: 10 }}>บ่าย</th>
+                      <th colSpan={2} style={{ fontSize: '14px', padding: '8px 4px', borderLeft: '1px solid #e2e8f0', backgroundColor: '#0b31f0', color: 'white', position: 'sticky', top: '45px', zIndex: 10 }}>ดึก</th>
                     </React.Fragment>
                   );
                 })}
@@ -292,12 +294,12 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
                 <tr>
                     {daysInMonth.map(d => (
                         <React.Fragment key={d}>
-                            <th style={{ fontSize: '9px', padding: '4px', borderLeft: '1px solid #e2e8f0', background: '#fee2e2', position: 'sticky', top: '77px', zIndex: 10 }}>เข้า</th>
-                            <th style={{ fontSize: '9px', padding: '4px', background: '#fee2e2', position: 'sticky', top: '77px', zIndex: 10 }}>ออก</th>
-                            <th style={{ fontSize: '9px', padding: '4px', borderLeft: '1px solid #e2e8f0', background: '#fee2e2', position: 'sticky', top: '77px', zIndex: 10 }}>เข้า</th>
-                            <th style={{ fontSize: '9px', padding: '4px', background: '#fee2e2', position: 'sticky', top: '77px', zIndex: 10 }}>ออก</th>
-                            <th style={{ fontSize: '9px', padding: '4px', borderLeft: '1px solid #e2e8f0', background: '#fee2e2', position: 'sticky', top: '77px', zIndex: 10 }}>เข้า</th>
-                            <th style={{ fontSize: '9px', padding: '4px', background: '#fee2e2', position: 'sticky', top: '77px', zIndex: 10 }}>ออก</th>
+                            <th style={{ fontSize: '14px', color: 'white',padding: '4px', borderLeft: '1px solid #e8c5e3', background: '#04601b', position: 'sticky', top: '77px', zIndex: 10 }}>เข้า</th>
+                            <th style={{ fontSize: '14px', color: 'white',padding: '4px', background: '#ce0916', position: 'sticky', top: '77px', zIndex: 10 }}>ออก</th>
+                            <th style={{ fontSize: '14px', color: 'white',padding: '4px', borderLeft: '1px solid #e8c5e3', background: '#04601b', position: 'sticky', top: '77px', zIndex: 10 }}>เข้า</th>
+                            <th style={{ fontSize: '14px', color: 'white',padding: '4px', background: '#ce0916', position: 'sticky', top: '77px', zIndex: 10 }}>ออก</th>
+                            <th style={{ fontSize: '14px', color: 'white',padding: '4px', borderLeft: '1px solid #e8c5e3', background: '#04601b', position: 'sticky', top: '77px', zIndex: 10 }}>เข้า</th>
+                            <th style={{ fontSize: '14px', color: 'white',padding: '4px', background: '#ce0916', position: 'sticky', top: '77px', zIndex: 10 }}>ออก</th>
                         </React.Fragment>
                     ))}
                 </tr>
@@ -318,7 +320,7 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
                   <td 
                     style={{ 
                       position: 'sticky', left: '200px', zIndex: 5, background: 'white', 
-                      borderRight: '1px solid #e2e8f0', fontSize: '12px', color: '#64748b',
+                      borderRight: '1px solid #e2e8f0', fontSize: '13px', color: '#334155',
                       boxShadow: '2px 0 5px rgba(0,0,0,0.05)'
                     }}
                   >
@@ -331,11 +333,11 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
                     const isHoliday = !!data?.holiday;
                     const isShift8 = selectedTemplate === '2';
                     
-                    let cellStyle: React.CSSProperties = { borderLeft: '1px solid #f1f5f9', textAlign: 'center', fontSize: '12px' };
+                    let cellStyle: React.CSSProperties = { borderLeft: '1px solid #f1e0f3', textAlign: 'center', fontSize: '13px' };
 
                     if (data?.leave || data?.official) {
                         const content = data?.leave || data?.official;
-                        const badgeStyle = data?.leave ? { background: '#fefce8', color: '#854d0e' } : { background: '#eff6ff', color: '#1e40af' };
+                        const badgeStyle = data?.leave ? { background: '#a142ee', color: '#fcf8f7', fontSize: '14px' } : { background: '#1372ee', color: '#f0f2f8' , fontSize: '14px'};
                         const isFull = data?.leave_type === '01' || data?.official_type === '01';
                         
                         if (isFull) {

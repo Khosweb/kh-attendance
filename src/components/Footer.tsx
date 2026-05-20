@@ -19,10 +19,10 @@ const Footer: React.FC = () => {
             color: 'var(--primary-pink)',
             marginBottom: '10px'
           }}>
-            PINK<span style={{ color: 'var(--deep-grey)' }}>BLISS</span>
+            K H O S<span style={{ color: 'var(--deep-grey)' }}>. MOPH</span>
           </div>
           <p style={{ color: '#999', fontSize: '0.9rem' }}>
-            © {new Date().getFullYear()} PinkBliss Inc. All rights reserved.
+            © {new Date().getFullYear()} Khlonghat Hospital Inc. All rights reserved.
           </p>
         </div>
         <ul style={{

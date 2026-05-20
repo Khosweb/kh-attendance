@@ -121,6 +121,24 @@ app.get('/api/time-templates', auth, async (req, res) => {
     }
 });
 
+app.get('/api/persons', auth, async (req, res) => {
+    try {
+        const { departmentId } = req.query;
+        let query = 'SELECT ID, HR_FNAME, HR_LNAME FROM hr_person WHERE HR_STATUS_ID = "01"';
+        const params = [];
+        if (departmentId && departmentId !== 'all') {
+            query += ' AND HR_DEPARTMENT_ID = ?';
+            params.push(departmentId);
+        }
+        query += ' ORDER BY HR_FNAME';
+        const [rows] = await db.execute(query, params);
+        res.json(rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 app.get('/api/shifts', auth, async (req, res) => {
     try {
         const [rows] = await db.execute(`
@@ -171,11 +189,11 @@ app.get('/api/attendance/history', auth, async (req, res) => {
       SELECT 
         p.ID, p.HR_FNAME, p.HR_LNAME, d.HR_DEPARTMENT_NAME, pt.HR_PERSON_TYPE_NAME,
         CAST(h.AccessDate AS CHAR) as date,
-        LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '05:00:00' AND '10:00:00' AND h.AttendanceStatus = 'i' THEN h.AccessTime END), 5) as check_in,
-        LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '15:30:00' AND '22:00:00' AND h.AttendanceStatus = 'o' THEN h.AccessTime END), 5) as check_out,
-        LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '05:00:00' AND '10:00:00' AND h.AttendanceStatus = 'i' THEN h.AccessTime END), 5) as shift_m_in,
+        LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '04:00:00' AND '10:00:00' AND h.AttendanceStatus = 'i' THEN h.AccessTime END), 5) as check_in,
+        LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '14:00:00' AND '22:00:00' AND h.AttendanceStatus = 'o' THEN h.AccessTime END), 5) as check_out,
+        LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '04:00:00' AND '10:00:00' AND h.AttendanceStatus = 'i' THEN h.AccessTime END), 5) as shift_m_in,
         LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '14:00:00' AND '17:00:00' AND h.AttendanceStatus = 'o' THEN h.AccessTime END), 5) as shift_m_out,
-        LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '15:00:00' AND '17:00:00' AND h.AttendanceStatus = 'i' THEN h.AccessTime END), 5) as shift_a_in,
+        LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '14:00:00' AND '17:00:00' AND h.AttendanceStatus = 'i' THEN h.AccessTime END), 5) as shift_a_in,
         LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '21:00:00' AND '23:59:59' AND h.AttendanceStatus = 'o' THEN h.AccessTime END), 5) as shift_a_out,
         LEFT(MAX(CASE WHEN (h.AccessTime BETWEEN '21:00:00' AND '23:59:59' OR h.AccessTime BETWEEN '00:00:00' AND '01:30:00') AND h.AttendanceStatus = 'i' THEN h.AccessTime END), 5) as shift_n_in,
         LEFT(MAX(CASE WHEN h.AccessTime BETWEEN '06:00:00' AND '09:30:00' AND h.AttendanceStatus = 'o' THEN h.AccessTime END), 5) as shift_n_out
