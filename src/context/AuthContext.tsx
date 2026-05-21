@@ -25,7 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('auth_token');
-      if (token) {
+      if (token && token !== "undefined" && token !== "null") {
         try {
           const response = await fetch(`${API_URL}/me`, {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -34,7 +34,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setUser(await response.json());
           } else {
             localStorage.removeItem('auth_token');
-            localStorage.removeItem('refresh_token');
           }
         } catch (error) {
           console.error('Auth check failed:', error);
@@ -45,69 +44,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     checkAuth();
   }, []);
 
-  const refreshAccessToken = async () => {
-    const refreshToken = localStorage.getItem('refresh_token');
-    console.log('[Auth] Attempting refresh with token:', refreshToken);
-    
-    if (!refreshToken) {
-        console.error('[Auth] No refresh token available');
-        throw new Error('No refresh token');
-    }
-
-    const response = await fetch(`${API_URL}/auth/refresh`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refreshToken })
-    });
-
-    console.log('[Auth] Refresh response status:', response.status);
-
-    if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error('[Auth] Refresh failed:', errorData);
-        logout();
-        throw new Error('Session expired');
-    }
-
-    const data = await response.json();
-    console.log('[Auth] Refresh successful, new token received');
-    localStorage.setItem('auth_token', data.accessToken);
-    return data.accessToken;
-  };
-
   const authenticatedFetch = async (url: string, options: RequestInit = {}) => {
-    let token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem('auth_token');
     
-    // ตรวจสอบเพิ่มว่า token ต้องไม่ใช่คำว่า "undefined" หรือ null
-    if (token === "undefined" || token === null) {
-        token = null;
-    }
-    // หากไม่มี token ให้ทำรายการทันที (เผื่อเป็น endpoint public) 
-    // แต่ถ้าเป็น endpoint ป้องกัน จะถูก backend ตีกลับด้วย 401
     const headers = { 
         ...options.headers, 
         'Content-Type': 'application/json',
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        ...(token && token !== "undefined" && token !== "null" ? { 'Authorization': `Bearer ${token}` } : {})
     };
     
     console.log('[AuthFetch] Requesting URL:', url);
-    
-    let response = await fetch(url, { ...options, headers });
-    
-    // ถ้าเจอ 401 และมี refresh token ให้ลองขอใหม่
-    if (response.status === 401 && localStorage.getItem('refresh_token')) {
-        try {
-            token = await refreshAccessToken();
-            // เช็คอีกครั้งหลัง refresh
-            if (token && token !== "undefined") {
-                const newHeaders = { ...headers, 'Authorization': `Bearer ${token}` };
-                response = await fetch(url, { ...options, headers: newHeaders });
-            }
-        } catch (e) {
-            console.error('Failed to refresh token:', e);
-        }
-    }
-    return response;
+    return await fetch(url, { ...options, headers });
   };
 
   const login = async (username: string, password: string) => {
@@ -121,7 +68,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!response.ok) throw new Error(data.message || 'Login failed');
 
     localStorage.setItem('auth_token', data.accessToken);
-    localStorage.setItem('refresh_token', data.refreshToken);
     setUser(data.user);
   };
 
@@ -136,14 +82,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!response.ok) throw new Error(data.message || 'Signup failed');
 
     localStorage.setItem('auth_token', data.accessToken);
-    localStorage.setItem('refresh_token', data.refreshToken);
     setUser(data.user);
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem('auth_token');
-    localStorage.removeItem('refresh_token');
   };
 
   return (
