@@ -47,7 +47,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshAccessToken = async () => {
     const refreshToken = localStorage.getItem('refresh_token');
-    if (!refreshToken) throw new Error('No refresh token');
+    console.log('[Auth] Attempting refresh with token:', refreshToken);
+    
+    if (!refreshToken) {
+        console.error('[Auth] No refresh token available');
+        throw new Error('No refresh token');
+    }
 
     const response = await fetch(`${API_URL}/auth/refresh`, {
         method: 'POST',
@@ -55,12 +60,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         body: JSON.stringify({ refreshToken })
     });
 
+    console.log('[Auth] Refresh response status:', response.status);
+
     if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('[Auth] Refresh failed:', errorData);
         logout();
         throw new Error('Session expired');
     }
 
     const data = await response.json();
+    console.log('[Auth] Refresh successful, new token received');
     localStorage.setItem('auth_token', data.accessToken);
     return data.accessToken;
   };
