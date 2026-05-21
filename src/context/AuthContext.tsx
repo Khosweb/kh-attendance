@@ -67,14 +67,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const authenticatedFetch = async (url: string, options: RequestInit = {}) => {
     let token = localStorage.getItem('auth_token');
-    const headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
+    
+    // หากไม่มี token ให้ทำรายการทันที (เผื่อเป็น endpoint public) 
+    // แต่ถ้าเป็น endpoint ป้องกัน จะถูก backend ตีกลับด้วย 401
+    const headers = { 
+        ...options.headers, 
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    };
+    
+    console.log(`[AuthFetch] Requesting: ${url}`, { headers });
     
     let response = await fetch(url, { ...options, headers });
     
-    if (response.status === 401) {
-        token = await refreshAccessToken();
-        const newHeaders = { ...options.headers, 'Authorization': `Bearer ${token}` };
-        response = await fetch(url, { ...options, headers: newHeaders });
+    // ถ้าเจอ 401 และมี refresh token ให้ลองขอใหม่
+    if (response.status === 401 && localStorage.getItem('refresh_token')) {
+        try {
+            token = await refreshAccessToken();
+            const newHeaders = { ...headers, 'Authorization': `Bearer ${token}` };
+            response = await fetch(url, { ...options, headers: newHeaders });
+        } catch (e) {
+            console.error('Failed to refresh token:', e);
+        }
     }
     return response;
   };
