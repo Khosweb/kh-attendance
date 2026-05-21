@@ -54,6 +54,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     
     console.log('[AuthFetch] Requesting URL:', url);
+    console.log('[AuthFetch] Headers sent:', headers); // เพิ่ม log นี้
+    
     return await fetch(url, { ...options, headers });
   };
 
