@@ -315,7 +315,7 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
                   <td 
                     style={{ 
                       position: 'sticky', left: '200px', zIndex: 5, background: 'white', 
-                      borderRight: '1px solid #e2e8f0', fontSize: '13px', color: '#334155',
+                      borderRight: '1px solid #e2e8f0', fontSize: '12px', color: '#334155',
                       boxShadow: '2px 0 5px rgba(0,0,0,0.05)'
                     }}
                   >
@@ -332,7 +332,7 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
 
                     if (data?.leave || data?.official) {
                         const content = data?.leave || data?.official;
-                        const badgeStyle = data?.leave ? { background: '#a142ee', color: '#fcf8f7', fontSize: '14px' } : { background: '#1372ee', color: '#f0f2f8' , fontSize: '14px'};
+                        const badgeStyle = data?.leave ? { background: '#a142ee', color: '#fcf8f7', fontSize: '12px' } : { background: '#1372ee', color: '#f0f2f8' , fontSize: '12px'};
                         const isFull = data?.leave_type === '01' || data?.official_type === '01';
                         
                         if (isFull) {
