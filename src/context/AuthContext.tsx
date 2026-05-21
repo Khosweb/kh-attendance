@@ -69,7 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error(data.message || 'Login failed');
     }
 
-    console.log('AuthContext: Login successful', data.user);
+    console.log('AuthContext: Login successful', data);
     setUser(data.user);
     localStorage.setItem('auth_token', data.token);
   };

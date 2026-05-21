@@ -27,6 +27,7 @@ const Login: React.FC = () => {
     
     try {
       await login(username, password);
+      return
       navigate('/dashboard', { replace: true });
     } catch (err: any) {
       setError(err.message || 'Login failed. Please check your credentials.');
