@@ -28,7 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (token) {
         try {
-          const response = await fetch(`${API_URL}/auth/me`, {
+          const response = await fetch(`${API_URL}/me`, {
             headers: {
               'Authorization': `Bearer ${token}`
             }
