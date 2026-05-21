@@ -25,20 +25,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('auth_token');
-      console.log('[Auth] checkAuth: token found:', !!token);
+      const isValid = token && token !== "undefined" && token !== "null" && token.trim() !== "";
       
-      if (token && token !== "undefined" && token !== "null") {
+      console.log('[Auth] checkAuth: token found:', !!token, 'isValid:', isValid);
+      
+      if (isValid) {
         try {
           const response = await fetch(`${API_URL}/me`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           
-          console.log('[Auth] checkAuth: /me response status:', response.status);
-          
           if (response.ok) {
-            const userData = await response.json();
-            console.log('[Auth] checkAuth: User loaded:', userData);
-            setUser(userData);
+            setUser(await response.json());
           } else {
             console.warn('[Auth] checkAuth: /me failed, clearing token');
             localStorage.removeItem('auth_token');
@@ -56,15 +54,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const authenticatedFetch = async (url: string, options: RequestInit = {}) => {
     const token = localStorage.getItem('auth_token');
+    const isValid = token && token !== "undefined" && token !== "null" && token.trim() !== "";
     
     const headers = { 
         ...options.headers, 
         'Content-Type': 'application/json',
-        ...(token && token !== "undefined" && token !== "null" ? { 'Authorization': `Bearer ${token}` } : {})
+        ...(isValid ? { 'Authorization': `Bearer ${token}` } : {})
     };
     
     console.log('[AuthFetch] Requesting URL:', url);
-    console.log('[AuthFetch] Headers sent:', headers); // เพิ่ม log นี้
+    console.log('[AuthFetch] Headers sent:', headers);
     
     return await fetch(url, { ...options, headers });
   };
