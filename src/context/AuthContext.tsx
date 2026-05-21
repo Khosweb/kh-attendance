@@ -13,6 +13,7 @@ interface AuthContextType {
   signup: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
+  authenticatedFetch: (url: string, options?: RequestInit) => Promise<Response>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -24,37 +25,59 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('auth_token');
-      console.log('AuthContext: Checking token:', token ? 'Found' : 'Not Found');
-      
       if (token) {
         try {
           const response = await fetch(`${API_URL}/me`, {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
+            headers: { 'Authorization': `Bearer ${token}` }
           });
-          
-          console.log('AuthContext: /me response status:', response.status);
-          
           if (response.ok) {
-            const userData = await response.json();
-            console.log('AuthContext: User authenticated:', userData);
-            setUser(userData);
+            setUser(await response.json());
           } else {
-            console.warn('AuthContext: Token invalid or expired, removing');
             localStorage.removeItem('auth_token');
-            setUser(null);
+            localStorage.removeItem('refresh_token');
           }
         } catch (error) {
-          console.error('AuthContext: Auth check failed:', error);
-          localStorage.removeItem('auth_token');
-          setUser(null);
+          console.error('Auth check failed:', error);
         }
       }
       setIsLoading(false);
     };
     checkAuth();
   }, []);
+
+  const refreshAccessToken = async () => {
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) throw new Error('No refresh token');
+
+    const response = await fetch(`${API_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken })
+    });
+
+    if (!response.ok) {
+        logout();
+        throw new Error('Session expired');
+    }
+
+    const data = await response.json();
+    localStorage.setItem('auth_token', data.accessToken);
+    return data.accessToken;
+  };
+
+  const authenticatedFetch = async (url: string, options: RequestInit = {}) => {
+    let token = localStorage.getItem('auth_token');
+    const headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
+    
+    let response = await fetch(url, { ...options, headers });
+    
+    if (response.status === 401) {
+        token = await refreshAccessToken();
+        const newHeaders = { ...options.headers, 'Authorization': `Bearer ${token}` };
+        response = await fetch(url, { ...options, headers: newHeaders });
+    }
+    return response;
+  };
 
   const login = async (username: string, password: string) => {
     const response = await fetch(`${API_URL}/auth/login`, {
@@ -64,13 +87,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Login failed');
 
-    if (!response.ok) {
-      throw new Error(data.message || 'Login failed');
-    }
-
-    localStorage.setItem('auth_token', data.token);
-    console.log('AuthContext: Login successful', data.user);
+    localStorage.setItem('auth_token', data.accessToken);
+    localStorage.setItem('refresh_token', data.refreshToken);
     setUser(data.user);
   };
 
@@ -82,22 +102,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Signup failed');
 
-    if (!response.ok) {
-      throw new Error(data.message || 'Signup failed');
-    }
-
-    localStorage.setItem('auth_token', data.token);
+    localStorage.setItem('auth_token', data.accessToken);
+    localStorage.setItem('refresh_token', data.refreshToken);
     setUser(data.user);
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('refresh_token');
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, isLoading, authenticatedFetch }}>
       {children}
     </AuthContext.Provider>
   );
@@ -105,8 +124,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (context === undefined) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };

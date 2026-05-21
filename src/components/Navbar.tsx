@@ -50,7 +50,7 @@ const Navbar: React.FC<NavbarProps> = ({
   const [showPersonDropdown, setShowPersonList] = useState(false);
   const personDropdownRef = useRef<HTMLDivElement>(null);
 
-  const { user, logout } = useAuth();
+  const { user, logout, authenticatedFetch } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -73,11 +73,9 @@ const Navbar: React.FC<NavbarProps> = ({
   useEffect(() => {
     const fetchData = async () => {
         try {
-            const headers = { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` };
-
             const [depRes, typeRes] = await Promise.all([
-                fetch(`${API_URL}/departments`, { headers }),
-                fetch(`${API_URL}/staff-types`, { headers })
+                authenticatedFetch(`${API_URL}/departments`),
+                authenticatedFetch(`${API_URL}/staff-types`)
             ]);
 
             const [depData, typeData] = await Promise.all([
@@ -92,12 +90,12 @@ const Navbar: React.FC<NavbarProps> = ({
         }
     };
     if (user) fetchData();
-  }, [user]);
+  }, [user, authenticatedFetch]);
+
   useEffect(() => {
     const fetchPersons = async () => {
         try {
-            const headers = { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` };
-            const res = await fetch(`${API_URL}/persons?departmentId=${selectedDepartment}`, { headers });
+            const res = await authenticatedFetch(`${API_URL}/persons?departmentId=${selectedDepartment}`);
             const data = await res.json();
             if (Array.isArray(data)) setPersons(data);
         } catch (err) {
@@ -109,7 +107,7 @@ const Navbar: React.FC<NavbarProps> = ({
         if (setSelectedPerson) setSelectedPerson('all');
         setPersonSearch('');
     }
-  }, [user, selectedDepartment, setSelectedPerson]);
+  }, [user, selectedDepartment, setSelectedPerson, authenticatedFetch]);
 
   const handleLogout = () => {
     logout();

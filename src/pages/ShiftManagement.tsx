@@ -17,7 +17,7 @@ interface Template {
 }
 
 const ShiftManagement: React.FC = () => {
-    const { user } = useAuth();
+    const { user, authenticatedFetch } = useAuth();
     const [assignments, setAssignments] = useState<ShiftAssignment[]>([]);
     const [templates, setTemplates] = useState<Template[]>([]);
     const [loading, setLoading] = useState(true);
@@ -25,11 +25,10 @@ const ShiftManagement: React.FC = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const headers = { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` };
             try {
                 const [shiftRes, tempRes] = await Promise.all([
-                    fetch(`${API_URL}/shifts`, { headers }),
-                    fetch(`${API_URL}/time-templates`, { headers })
+                    authenticatedFetch(`${API_URL}/shifts`),
+                    authenticatedFetch(`${API_URL}/time-templates`)
                 ]);
                 const shiftData = await shiftRes.json();
                 const tempData = await tempRes.json();
@@ -42,17 +41,13 @@ const ShiftManagement: React.FC = () => {
             }
         };
         if (user) fetchData();
-    }, [user]);
+    }, [user, authenticatedFetch]);
 
     const handleUpdate = async (personId: string, templateId: string) => {
-        const headers = { 
-            'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
-            'Content-Type': 'application/json'
-        };
         try {
-            await fetch(`${API_URL}/shifts`, {
+            await authenticatedFetch(`${API_URL}/shifts`, {
                 method: 'POST',
-                headers,
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ personId, templateId })
             });
             setAssignments(prev => prev.map(a => a.ID === personId ? {...a, TEMPLATE_ID: templateId} : a));
