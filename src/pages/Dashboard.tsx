@@ -139,10 +139,16 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
       const row = [emp.name, emp.department];
       daysInMonth.forEach(d => {
         const data = emp.days[d];
+        const status = data?.leave || data?.official;
+        const type = data?.leave_type || data?.official_type;
+
         if (isShift8) {
-          if (data?.leave || data?.official) {
-            const status = data.leave || data.official;
+          if (type === '01') {
             row.push(status, status, status, status, status, status);
+          } else if (type === '02') {
+            row.push(status, status, data?.shift_a_in || '-', data?.shift_a_out || '-', data?.shift_n_in || '-', data?.shift_n_out || '-');
+          } else if (type === '03') {
+            row.push(data?.shift_m_in || '-', data?.shift_m_out || '-', status, status, data?.shift_n_in || '-', data?.shift_n_out || '-');
           } else {
             row.push(
               data?.shift_m_in || '-', data?.shift_m_out || '-',
@@ -151,9 +157,12 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
             );
           }
         } else {
-          if (data?.leave || data?.official) {
-            const status = data.leave || data.official;
+          if (type === '01') {
             row.push(status, status);
+          } else if (type === '02') {
+            row.push(status, data?.out || '-');
+          } else if (type === '03') {
+            row.push(data?.in || '-', status);
           } else {
             row.push(data?.in || '-', data?.out || '-');
           }
@@ -330,27 +339,33 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
                     
                     let cellStyle: React.CSSProperties = { borderLeft: '1px solid #f1e0f3', textAlign: 'center', fontSize: '13px' };
 
-                    if (data?.leave || data?.official) {
-                        const content = data?.leave || data?.official;
-                        const badgeStyle = data?.leave ? { background: '#a142ee', color: '#fcf8f7', fontSize: '12px' } : { background: '#1372ee', color: '#f0f2f8' , fontSize: '12px'};
-                        const isFull = data?.leave_type === '01' || data?.official_type === '01';
-                        
-                        if (isFull) {
-                            return (
-                                <td key={d} colSpan={isShift8 ? 6 : 2} style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>
-                                    <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{content}</span>
-                                </td>
-                            );
-                        }
+                    const leaveOrOfficial = data?.leave || data?.official;
+                    const type = data?.leave_type || data?.official_type;
+                    const badgeStyle = data?.leave ? { background: '#a142ee', color: '#fcf8f7', fontSize: '12px' } : { background: '#1372ee', color: '#f0f2f8' , fontSize: '12px'};
+
+                    if (type === '01') {
+                        return (
+                            <td key={d} colSpan={isShift8 ? 6 : 2} style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>
+                                <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{leaveOrOfficial}</span>
+                            </td>
+                        );
                     }
 
                     if (isShift8) {
                         return (
                             <React.Fragment key={d}>
-                                <td style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>{data?.shift_m_in || '-'}</td>
-                                <td style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>{data?.shift_m_out || '-'}</td>
-                                <td style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>{data?.shift_a_in || '-'}</td>
-                                <td style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>{data?.shift_a_out || '-'}</td>
+                                <td style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>
+                                    {type === '02' ? <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{leaveOrOfficial}</span> : (data?.shift_m_in || '-')}
+                                </td>
+                                <td style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>
+                                    {type === '02' ? <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{leaveOrOfficial}</span> : (data?.shift_m_out || '-')}
+                                </td>
+                                <td style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>
+                                    {type === '03' ? <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{leaveOrOfficial}</span> : (data?.shift_a_in || '-')}
+                                </td>
+                                <td style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>
+                                    {type === '03' ? <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{leaveOrOfficial}</span> : (data?.shift_a_out || '-')}
+                                </td>
                                 <td style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>{data?.shift_n_in || '-'}</td>
                                 <td style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>{data?.shift_n_out || '-'}</td>
                             </React.Fragment>
@@ -359,8 +374,12 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
 
                     return (
                       <React.Fragment key={d}>
-                        <td style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>{data?.in || '-'}</td>
-                        <td style={{ ...cellStyle, borderLeft: 'none', backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>{data?.out || '-'}</td>
+                        <td style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>
+                            {type === '02' ? <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{leaveOrOfficial}</span> : (data?.in || '-')}
+                        </td>
+                        <td style={{ ...cellStyle, borderLeft: 'none', backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>
+                            {type === '03' ? <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{leaveOrOfficial}</span> : (data?.out || '-')}
+                        </td>
                       </React.Fragment>
                     );
                   })}
