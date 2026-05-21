@@ -78,7 +78,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const data = await response.json();
     if (!response.ok) throw new Error(data.message || 'Login failed');
 
+    console.log('[Auth] Login successful, token:', data.accessToken);
     localStorage.setItem('auth_token', data.accessToken);
+    console.log('[Auth] Token stored:', localStorage.getItem('auth_token'));
+    
     setUser(data.user);
   };
 
