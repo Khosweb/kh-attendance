@@ -328,7 +328,7 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
                     const isHoliday = !!data?.holiday;
                     const isShift8 = selectedTemplate === '2';
                     
-                    let cellStyle: React.CSSProperties = { borderLeft: '1px solid #f1e0f3', textAlign: 'center', fontSize: '13px' };
+                    let cellStyle: React.CSSProperties = { borderLeft: '1px solid #f1e0f3', textAlign: 'center', fontSize: '12px' };
 
                     if (data?.leave || data?.official) {
                         const content = data?.leave || data?.official;
