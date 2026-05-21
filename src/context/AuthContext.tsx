@@ -69,9 +69,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error(data.message || 'Login failed');
     }
 
+    localStorage.setItem('auth_token', data.token);
     console.log('AuthContext: Login successful', data.user);
     setUser(data.user);
-    localStorage.setItem('auth_token', data.token);
   };
 
   const signup = async (name: string, email: string, password: string) => {
@@ -87,8 +87,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error(data.message || 'Signup failed');
     }
 
-    setUser(data.user);
     localStorage.setItem('auth_token', data.token);
+    setUser(data.user);
   };
 
   const logout = () => {
