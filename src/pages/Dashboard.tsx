@@ -294,7 +294,7 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
                             <th style={{ fontSize: '12px', color: 'white',padding: '4px', borderLeft: '1px solid #e8c5e3', background: '#04601b', position: 'sticky', top: '77px', zIndex: 10 }}>เข้า</th>
                             <th style={{ fontSize: '12px', color: 'white',padding: '4px', background: '#ce0916', position: 'sticky', top: '77px', zIndex: 10 }}>ออก</th>
                             <th style={{ fontSize: '12px', color: 'white',padding: '4px', borderLeft: '1px solid #e8c5e3', background: '#04601b', position: 'sticky', top: '77px', zIndex: 10 }}>เข้า</th>
-                            <th style={{ fontSize: '12px', color: 'white',padding: '4px', background: '#ce0916', position 'sticky', top: '77px', zIndex: 10 }}>ออก</th>
+                            <th style={{ fontSize: '12px', color: 'white',padding: '4px', background: '#ce0916', position: 'sticky', top: '77px', zIndex: 10 }}>ออก</th>
                         </React.Fragment>
                     ))}
                 </tr>
