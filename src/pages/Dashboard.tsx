@@ -259,8 +259,8 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
                       borderLeft: '1px solid #f0d6f0',
                       position: 'sticky', top: 0, zIndex: 10
                     }}>
-                        <div style={{ color: holidayName ? '#f4eef0' : isWeekend ? '#64748b' : '#475569' ,fontSize: '14px'}}>{d}</div>
-                        {holidayName && <div style={{ fontSize: '15px', fontWeight: 700, color: '#f9f7f7', marginTop: '2px' }}>{holidayName}</div>}
+                        <div style={{ color: holidayName ? '#f4eef0' : isWeekend ? '#64748b' : '#475569' ,fontSize: '12px'}}>{d}</div>
+                        {holidayName && <div style={{ fontSize: '14px', fontWeight: 700, color: '#f9f7f7', marginTop: '2px' }}>{holidayName}</div>}
                     </th>
                   );
                 })}
@@ -271,16 +271,16 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
                   if (!isShift8) {
                       return (
                         <React.Fragment key={d}>
-                            <th style={{ fontSize: '14px',color: '#090000',padding: '8px 4px', borderLeft: '1px solid #efb4e2', position: 'sticky', top: '45px', zIndex: 10, background: '#e5ecf7' }}>เข้า</th>
-                            <th style={{ fontSize: '14px',color: '#090000',padding: '8px 4px', position: 'sticky', top: '45px', zIndex: 10, background: '#e5ecf7' }}>ออก</th>
+                            <th style={{ fontSize: '12px',color: '#090000',padding: '8px 4px', borderLeft: '1px solid #efb4e2', position: 'sticky', top: '45px', zIndex: 10, background: '#e5ecf7' }}>เข้า</th>
+                            <th style={{ fontSize: '12px',color: '#090000',padding: '8px 4px', position: 'sticky', top: '45px', zIndex: 10, background: '#e5ecf7' }}>ออก</th>
                         </React.Fragment>
                       );
                   }
                   return (
                     <React.Fragment key={d}>
-                      <th colSpan={2} style={{ fontSize: '14px', padding: '8px 4px', borderLeft: '1px solid #e2e8f0', backgroundColor: '#089c81', color: 'white', position: 'sticky', top: '45px', zIndex: 10 }}>เช้า</th>
-                      <th colSpan={2} style={{ fontSize: '14px', padding: '8px 4px', borderLeft: '1px solid #e2e8f0', backgroundColor: '#ec860a', color: 'white', position: 'sticky', top: '45px', zIndex: 10 }}>บ่าย</th>
-                      <th colSpan={2} style={{ fontSize: '14px', padding: '8px 4px', borderLeft: '1px solid #e2e8f0', backgroundColor: '#0b31f0', color: 'white', position: 'sticky', top: '45px', zIndex: 10 }}>ดึก</th>
+                      <th colSpan={2} style={{ fontSize: '12px', padding: '8px 4px', borderLeft: '1px solid #e2e8f0', backgroundColor: '#089c81', color: 'white', position: 'sticky', top: '45px', zIndex: 10 }}>เช้า</th>
+                      <th colSpan={2} style={{ fontSize: '12px', padding: '8px 4px', borderLeft: '1px solid #e2e8f0', backgroundColor: '#ec860a', color: 'white', position: 'sticky', top: '45px', zIndex: 10 }}>บ่าย</th>
+                      <th colSpan={2} style={{ fontSize: '12px', padding: '8px 4px', borderLeft: '1px solid #e2e8f0', backgroundColor: '#0b31f0', color: 'white', position: 'sticky', top: '45px', zIndex: 10 }}>ดึก</th>
                     </React.Fragment>
                   );
                 })}
@@ -289,12 +289,12 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
                 <tr>
                     {daysInMonth.map(d => (
                         <React.Fragment key={d}>
-                            <th style={{ fontSize: '14px', color: 'white',padding: '4px', borderLeft: '1px solid #e8c5e3', background: '#04601b', position: 'sticky', top: '77px', zIndex: 10 }}>เข้า</th>
-                            <th style={{ fontSize: '14px', color: 'white',padding: '4px', background: '#ce0916', position: 'sticky', top: '77px', zIndex: 10 }}>ออก</th>
-                            <th style={{ fontSize: '14px', color: 'white',padding: '4px', borderLeft: '1px solid #e8c5e3', background: '#04601b', position: 'sticky', top: '77px', zIndex: 10 }}>เข้า</th>
-                            <th style={{ fontSize: '14px', color: 'white',padding: '4px', background: '#ce0916', position: 'sticky', top: '77px', zIndex: 10 }}>ออก</th>
-                            <th style={{ fontSize: '14px', color: 'white',padding: '4px', borderLeft: '1px solid #e8c5e3', background: '#04601b', position: 'sticky', top: '77px', zIndex: 10 }}>เข้า</th>
-                            <th style={{ fontSize: '14px', color: 'white',padding: '4px', background: '#ce0916', position: 'sticky', top: '77px', zIndex: 10 }}>ออก</th>
+                            <th style={{ fontSize: '12px', color: 'white',padding: '4px', borderLeft: '1px solid #e8c5e3', background: '#04601b', position: 'sticky', top: '77px', zIndex: 10 }}>เข้า</th>
+                            <th style={{ fontSize: '12px', color: 'white',padding: '4px', background: '#ce0916', position: 'sticky', top: '77px', zIndex: 10 }}>ออก</th>
+                            <th style={{ fontSize: '12px', color: 'white',padding: '4px', borderLeft: '1px solid #e8c5e3', background: '#04601b', position: 'sticky', top: '77px', zIndex: 10 }}>เข้า</th>
+                            <th style={{ fontSize: '12px', color: 'white',padding: '4px', background: '#ce0916', position: 'sticky', top: '77px', zIndex: 10 }}>ออก</th>
+                            <th style={{ fontSize: '12px', color: 'white',padding: '4px', borderLeft: '1px solid #e8c5e3', background: '#04601b', position: 'sticky', top: '77px', zIndex: 10 }}>เข้า</th>
+                            <th style={{ fontSize: '12px', color: 'white',padding: '4px', background: '#ce0916', position
                         </React.Fragment>
                     ))}
                 </tr>
