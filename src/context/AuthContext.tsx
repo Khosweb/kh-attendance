@@ -69,9 +69,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let token = localStorage.getItem('auth_token');
     
     // ตรวจสอบเพิ่มว่า token ต้องไม่ใช่คำว่า "undefined" หรือ null
-         if (token === "undefined" || token === null) {
-             token = null;
-         }
+    if (token === "undefined" || token === null) {
+        token = null;
+    }
     // หากไม่มี token ให้ทำรายการทันที (เผื่อเป็น endpoint public) 
     // แต่ถ้าเป็น endpoint ป้องกัน จะถูก backend ตีกลับด้วย 401
     const headers = { 
@@ -80,7 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         ...(token ? { 'Authorization': `Bearer ${token}` } : {})
     };
     
-    console.log(`[AuthFetch] Requesting: ${url}`, { headers });
+    console.log('[AuthFetch] Requesting URL:', url);
     
     let response = await fetch(url, { ...options, headers });
     
@@ -89,10 +89,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
             token = await refreshAccessToken();
             // เช็คอีกครั้งหลัง refresh
-              if (token && token !== "undefined") {
-                  const newHeaders = { ...headers, 'Authorization': `Bearer ${token}` };
-                   response = await fetch(url, { ...options, headers: newHeaders });
-               }
+            if (token && token !== "undefined") {
+                const newHeaders = { ...headers, 'Authorization': `Bearer ${token}` };
+                response = await fetch(url, { ...options, headers: newHeaders });
+            }
         } catch (e) {
             console.error('Failed to refresh token:', e);
         }
