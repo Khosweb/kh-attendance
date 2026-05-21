@@ -25,19 +25,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('auth_token');
+      console.log('[Auth] checkAuth: token found:', !!token);
+      
       if (token && token !== "undefined" && token !== "null") {
         try {
           const response = await fetch(`${API_URL}/me`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
+          
+          console.log('[Auth] checkAuth: /me response status:', response.status);
+          
           if (response.ok) {
-            setUser(await response.json());
+            const userData = await response.json();
+            console.log('[Auth] checkAuth: User loaded:', userData);
+            setUser(userData);
           } else {
+            console.warn('[Auth] checkAuth: /me failed, clearing token');
             localStorage.removeItem('auth_token');
           }
         } catch (error) {
-          console.error('Auth check failed:', error);
+          console.error('[Auth] checkAuth: Error calling /me:', error);
         }
+      } else {
+        console.log('[Auth] checkAuth: No valid token to check');
       }
       setIsLoading(false);
     };
