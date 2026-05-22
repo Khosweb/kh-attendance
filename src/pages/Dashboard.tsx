@@ -38,16 +38,22 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, selectedDepartment, selectedStaffType, selectedTemplate, selectedPerson }) => {
   const [history, setHistory] = useState<RawRecord[]>([]);
+  const [shifts, setShifts] = useState<any[]>([]);
 
   const fetchHistory = useCallback(async () => {
     try {
-      const response = await fetch(`${API_URL}/attendance/history?month=${selectedMonth}&year=${selectedYear}&departmentId=${selectedDepartment}&staffTypeId=${selectedStaffType}&templateId=${selectedTemplate}&personId=${selectedPerson}`, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
-      });
-      const data = await response.json();
-      setHistory(Array.isArray(data) ? data : []);
+      const headers = { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` };
+      const [historyRes, shiftsRes] = await Promise.all([
+        fetch(`${API_URL}/attendance/history?month=${selectedMonth}&year=${selectedYear}&departmentId=${selectedDepartment}&staffTypeId=${selectedStaffType}&templateId=${selectedTemplate}&personId=${selectedPerson}`, { headers }),
+        fetch(`${API_URL}/shifts`, { headers })
+      ]);
+      const historyData = await historyRes.json();
+      const shiftsData = await shiftsRes.json();
+      
+      setHistory(Array.isArray(historyData) ? historyData : []);
+      setShifts(Array.isArray(shiftsData) ? shiftsData : []);
     } catch (err) {
-      console.error('Failed to fetch history', err);
+      console.error('Failed to fetch data', err);
     }
   }, [selectedMonth, selectedYear, selectedDepartment, selectedStaffType, selectedTemplate, selectedPerson]);
 
@@ -72,22 +78,38 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
     return map;
   }, [history]);
 
-  // Group data by Employee (excluding system records)
+  // Group data by Employee (excluding system records) and filter by template
   const groupedData = useMemo(() => {
-    const map: Record<string, any> = {}
-    history.forEach(r => {
+    const map: Record<string, any> = {};
+    const shiftMap = new Map(shifts.map(s => [String(s.ID), String(s.TEMPLATE_ID)]));
+    
+    history.forEach((r) => {
       if (r.is_system) return;
-      if (!map[r.ID]) map[r.ID] = { 
-          name: `${r.HR_FNAME} ${r.HR_LNAME}`, 
-          department: r.HR_DEPARTMENT_NAME || '-', 
-          person_type: r.HR_PERSON_TYPE_NAME || '-',
-          id: r.ID, 
-          days: {} 
+      
+      const empId = String(r.ID);
+      const empTemplateId = shiftMap.get(empId) || '1'; // Default to '1' if not found
+      
+      // Filter logic: Only include if it matches the selected template
+      if (selectedTemplate !== 'all') {
+          if (empTemplateId !== selectedTemplate) {
+              return; // Skip this employee
+          }
       }
+      
+      if (!map[empId]) {
+          map[empId] = { 
+              name: `${r.HR_FNAME} ${r.HR_LNAME}`, 
+              department: r.HR_DEPARTMENT_NAME || '-', 
+              person_type: r.HR_PERSON_TYPE_NAME || '-',
+              id: empId, 
+              days: {} 
+          };
+      }
+      
       // Parse date 'YYYY-MM-DD'
       if (r.date) { 
         const d = parseInt(r.date.split('-')[2]);
-        map[r.ID].days[d] = {
+        map[empId].days[d] = {
             in: r.check_in,
             out: r.check_out,
             shift_m_in: r.shift_m_in,
@@ -104,8 +126,10 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
         }
       }
     });
-    return Object.values(map);
-  }, [history]);
+    const result = Object.values(map);
+    console.log(`Filtering complete. Total employees showing: ${result.length}`);
+    return result;
+  }, [history, shifts, selectedTemplate]);
 
   const handlePrint = () => window.print();
 
@@ -339,14 +363,15 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
                     
                     let cellStyle: React.CSSProperties = { borderLeft: '1px solid #f1e0f3', textAlign: 'center', fontSize: '13px' };
 
-                    const leaveOrOfficial = data?.leave || data?.official;
+                    const leaveOrOfficial = (data?.leave || data?.official);
+                    const displayStatus = leaveOrOfficial || '';
                     const type = data?.leave_type || data?.official_type;
                     const badgeStyle = data?.leave ? { background: '#a142ee', color: '#fcf8f7', fontSize: '12px' } : { background: '#1372ee', color: '#f0f2f8' , fontSize: '12px'};
 
                     if (type === '01') {
                         return (
                             <td key={d} colSpan={isShift8 ? 6 : 2} style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>
-                                <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{leaveOrOfficial}</span>
+                                <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{displayStatus}</span>
                             </td>
                         );
                     }
@@ -355,16 +380,16 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
                         return (
                             <React.Fragment key={d}>
                                 <td style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>
-                                    {type === '02' ? <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{leaveOrOfficial}</span> : (data?.shift_m_in || '-')}
+                                    {type === '02' ? <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{displayStatus}</span> : (data?.shift_m_in || '-')}
                                 </td>
                                 <td style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>
-                                    {type === '02' ? <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{leaveOrOfficial}</span> : (data?.shift_m_out || '-')}
+                                    {type === '02' ? <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{displayStatus}</span> : (data?.shift_m_out || '-')}
                                 </td>
                                 <td style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>
-                                    {type === '03' ? <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{leaveOrOfficial}</span> : (data?.shift_a_in || '-')}
+                                    {type === '03' ? <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{displayStatus}</span> : (data?.shift_a_in || '-')}
                                 </td>
                                 <td style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>
-                                    {type === '03' ? <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{leaveOrOfficial}</span> : (data?.shift_a_out || '-')}
+                                    {type === '03' ? <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{displayStatus}</span> : (data?.shift_a_out || '-')}
                                 </td>
                                 <td style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>{data?.shift_n_in || '-'}</td>
                                 <td style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>{data?.shift_n_out || '-'}</td>
@@ -375,10 +400,10 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedMonth, selectedYear, sele
                     return (
                       <React.Fragment key={d}>
                         <td style={{ ...cellStyle, backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>
-                            {type === '02' ? <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{leaveOrOfficial}</span> : (data?.in || '-')}
+                            {type === '02' ? <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{displayStatus}</span> : (data?.in || '-')}
                         </td>
                         <td style={{ ...cellStyle, borderLeft: 'none', backgroundColor: isHoliday ? '#fff1f2' : isWeekend ? '#f8fafc' : undefined }}>
-                            {type === '03' ? <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{leaveOrOfficial}</span> : (data?.out || '-')}
+                            {type === '03' ? <span className="status-badge" style={{ ...badgeStyle, whiteSpace: 'nowrap' }}>{displayStatus}</span> : (data?.out || '-')}
                         </td>
                       </React.Fragment>
                     );
