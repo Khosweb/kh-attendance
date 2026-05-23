@@ -1,18 +1,21 @@
 :root {
   --primary-pink: #FF85A1;
+  --dark-pink: #D81B60;
   --soft-pink: #FCE4EC;
+  --hover-pink: #F8BBD0;
   --white: #FFFFFF;
   --deep-grey: #4A4A4A;
   --light-grey: #F5F5F5;
+  --border-color: #E0E0E0;
   --transition: all 0.3s ease;
   
-  --bg-gradient: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
-  --card-shadow: 0 10px 25px rgba(0,0,0,0.05);
-  --glass-bg: rgba(255, 255, 255, 0.8);
-  --accent-color: #6366f1;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
+  --bg-gradient: linear-gradient(135deg, #FFF5F7 0%, #FCE4EC 100%);
+  --card-shadow: 0 10px 30px rgba(255, 133, 161, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --accent-color: var(--primary-pink);
+  --success: #66BB6A;
+  --warning: #FFA726;
+  --danger: #EF5350;
 }
 
 * {
@@ -22,10 +25,42 @@
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: #f8fafc;
+  font-family: 'Kanit', 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg-gradient);
   color: var(--deep-grey);
   line-height: 1.6;
+}
+
+/* Shift Button Group Styles */
+.shift-btn-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.shift-btn {
+  padding: 6px 16px;
+  border-radius: 25px;
+  border: 1px solid var(--border-color);
+  background: white;
+  color: #666;
+  font-size: 13px;
+  font-weight: 500;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.shift-btn:hover {
+  border-color: var(--primary-pink);
+  color: var(--primary-pink);
+  background: var(--soft-pink);
+}
+
+.shift-btn.active {
+  background: var(--primary-pink);
+  color: white;
+  border-color: var(--primary-pink);
+  box-shadow: 0 4px 10px rgba(255, 133, 161, 0.3);
 }
 
 /* Dashboard Specific Styles */
@@ -41,7 +76,7 @@ body {
   border-radius: 20px;
   box-shadow: var(--card-shadow);
   overflow: hidden;
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  border: 1px solid rgba(255, 133, 161, 0.2);
 }
 
 .table-modern {
@@ -51,24 +86,24 @@ body {
 }
 
 .table-modern th {
-  background: #f1f5f9;
+  background: var(--soft-pink);
   padding: 16px;
   font-weight: 600;
-  color: #475569;
+  color: var(--dark-pink);
   text-transform: uppercase;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.05em;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 2px solid var(--primary-pink);
 }
 
 .table-modern td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #f1f5f9;
+  padding: 16px;
+  border-bottom: 1px solid var(--soft-pink);
   font-size: 14px;
 }
 
 .table-modern tr:hover td {
-  background-color: #f8fafc;
+  background-color: #FFF9FA;
 }
 
 .status-badge {
@@ -111,7 +146,7 @@ button {
 }
 
 .btn-primary:hover {
-  background-color: #ff6b8e;
+  background-color: var(--dark-pink);
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(255, 133, 161, 0.4);
 }
